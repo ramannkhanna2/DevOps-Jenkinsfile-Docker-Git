@@ -177,8 +177,6 @@ git push origin main
 
 # Jenkins Pipeline Tutorial
 
-In this tutorial you will create a simple CI/CD pipeline using Jenkins, the [Pipeline plugin][1]
-and [AWS Fargate][2].
 
 ## Table of Contents
 
@@ -203,47 +201,12 @@ and [AWS Fargate][2].
 
 ## Prerequisites
 
-You will need the following to complete this tutorial:
-
-- An AWS account
-- [AWS CLI][3] installed and configured for your AWS account
-- [Git][8]
 
 ## Forking the Repository
 
 You will have to push changes to Github in order to trigger the CI/CD pipeline. Therefore, before
 going any further in this tutorial, **fork this repository** and work on your own fork from now on.
 If you have never forked a repository, [this][10] might help.
-
-## Preparing the Deployment Environment
-
-The simplest way to get a container running on AWS is to use Fargate, so we will use a sample
-Fargate deployment which takes care of everything for us: VPC, SGs, IAM and the cluster itself.
-
-> **NOTE:** Fargate is only available on the **us-east-1** region at the time of writing, so we
-> will use this region.
-
-Perform the following steps to prepare the Fargate environment for our deployment:
-
-1. Log in to the ECS console under the **us-east-1** region (or simply click [here][4]).
-2. Click **Get Started**.
-3. Under **Container definition**, leave the **sample-app** option selected and click **Next**.
-4. Under **Load balancer type** choose **Application Load Balancer** and click **Next**.
-5. If you want, change the name of the cluster under **Cluster name**. Click **Next**.
-6. Click **Create**.
-
-The cluster should now be created along with all required resources. A sample app will be
-automatically deployed on the cluster once created (this could take a few minutes).
-
-Verify that the sample app works by browsing the DNS name of the load balancer. To find the DNS
-name you can click the link near **Load balancer** in the cluster creation status page, or find the
-load balancer in the [Load Balancers view][5].
-
-1. On the [Repositories][14] section on the ECS console, click **Get started** or **Create
-repository**.
-2. Under **Repository name** type "sample-app" and click **Next step** then **Done**.
-
-Make note of the **Repository URI** - you will need it later.
 
 ## Preparing Jenkins
 
@@ -258,6 +221,7 @@ Make note of the **Repository URI** - you will need it later.
 
         sudo yum remove -y java
         sudo yum install -y java-1.8.0-openjdk
+        yum install wget -y
         sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo
         sudo rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
         sudo yum install -y jenkins
@@ -366,43 +330,41 @@ Great. Now let's make the pipeline do some real stuff.
 ### Adding a CI Stage
 
 Let's add a simple CI step to our pipeline. We want to build a Docker image from our app and push
-it to ECR so that we can later deploy containers from it.
+it to GCR so that we can later deploy containers from it.
 
 Let's populate the `docker_repo_uri` environment variable with the full URI of the ECR repository
 you created previously. It shall be similar to the following:
 
-    pipeline {
-        ...
-
-        environment {
-            docker_repo_uri = "xxxx.com/sample-app"
-            task_def_arn = ""
-            cluster = ""
-            exec_role_arn = ""
-        }
-
-        ...
-    }
-
-Now, replace the "Example" stage with the following:
-
-    stage('Build') {
-        steps {
-            // Get SHA1 of current commit
-            script {
-                commit_id = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-            }
-            // Build the Docker image
-            sh "docker build -t ${docker_repo_uri}:${commit_id} ."
-            // Get Docker login credentials for ECR
-            sh "aws ecr get-login --no-include-email --region ${region} | sh"
-            // Push Docker image
-            sh "docker push ${docker_repo_uri}:${commit_id}"
-            // Clean up
-            sh "docker rmi -f ${docker_repo_uri}:${commit_id}"
-        }
-    }
-
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 Notice that we have two types of steps here: `script` and `sh`. `script` steps allow us to run a
 Groovy code snippet inside our declarative pipeline. We need this because we want to capture the
 SHA1 of the current commit and assign it to a variable, which we can then use to uniquely tag the
@@ -418,48 +380,7 @@ done editing, do the following:
 2. Push your changes to Github by running `git push origin`.
 
 Now, re-run the pipeline on Jenkins and examine its output. If all goes well, the pipeline will
-build a Docker image, push it to ECR and clean up the local image on Jenkins. Verify this by
-looking at the [Repositories][14] section of the ECS console. Your repository should now have an
-image in it.
-
-
-
-> # Installing Nexus
-Windows
-The zip archive can be unpacked using the Windows compression utility or a third party utility such as 7zip. Nexus Repository Manager should not be installed in the Program Files directory to avoid problems with Windows file registry virtualization. If you plan to run the repository manager as a specific user you can install it into the AppData\Local directory of that users home directory. Otherwise simply use e.g., C:\nexus or something similar, ensuring that the user running the application has full access. The Nexus Repository Manager executable nexus.exe can be found inside the bin directory and can be run as an application using the following command:
-
-nexus.exe /run
-Starting the repository manager with the run command will leave it running in the current shell and display the log output. The application can be accessed once the the log shows the message "Started Sonatype Nexus". The running application can be stopped using CTRL+C at the appropriate console.
-
-> # Quality Code Sonar Lint
-1. What is SonarQube
-SonarQube (formerly Sonar) is an open source platform for continuous inspection of code quality. It provides a server component with a bug dashboard which allows to view and analyze reported problems in your source code.
-
-* Sonar Lint 
-A IDE version of the SonarQube checks is called SonarLint and can be installed iin most popluar IDE, like Eclipse, VsCode or IntelliJ.
-
-2. SonarLint for Eclipse
-2.1. Installation
-SonarLint is available an stand-alone extension for the Eclipse IDE.
-
-You can install SonarLint into Eclipse via the marketplace client. The update site is http://eclipse.sonarlint.org. See Sonar on Eclipse for details.
-
-2.2. Using SonarLint
-
-
-> # Sonar Qube
-
-* Usage of SonarQube
-Analyse a Maven project
-To analyse a Maven project use the following command:
-
-mvn sonar:sonar   -Dsonar.host.url=http://localhost:9000   -Dsonar.login=yourkey
-
-
-Create HTML reports
-Your can generate HTML reports in the preview analysis mode.
-
-mvn sonar:sonar -Dsonar.analysis.mode=preview -Dsonar.issuesReport.html.enable=true
+build a Docker image, push it to GCR and clean up the local image on Jenkins.
 
 
 Type of environments :- 
