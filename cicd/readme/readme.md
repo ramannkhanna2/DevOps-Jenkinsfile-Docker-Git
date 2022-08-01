@@ -307,6 +307,29 @@ is defined in `steps`. A step can execute a shell script, push an artifact somew
 or a Slack message to someone and do lots of other stuff. We can see that at the moment our
 pipeline doesn't do much, just prints something to the console using an `echo` step.
 
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Build&Deploy') {
+            steps {
+             // Get SHA1 of current commit
+              script {
+                 commit_id = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+              }
+             // remove previous containers
+             sh "sudo docker rm -f `docker ps -aq`"   
+             // BUILD the Docker image
+             sh "sudo docker build -t image-name:${commit_id} ."
+             // SDEPLOYMENT:  Running docker container as my application   
+             sh "sudo docker run -d -p 81:80 --name mycontainer image-name:${commit_id}" 
+            }
+        }
+    }    
+}
+
+
 > **NOTE:** There is [an entire list][16] of step types which can be used in Jenknis pipelines,
 > however in this tutorial we will keep things simple and use mostly the `sh` step, which executes
 > a shell script.
@@ -332,45 +355,13 @@ Great. Now let's make the pipeline do some real stuff.
 Let's add a simple CI step to our pipeline. We want to build a Docker image from our app and push
 it to GCR so that we can later deploy containers from it.
 
-Let's populate the `docker_repo_uri` environment variable with the full URI of the ECR repository
-you created previously. It shall be similar to the following:
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
 Notice that we have two types of steps here: `script` and `sh`. `script` steps allow us to run a
 Groovy code snippet inside our declarative pipeline. We need this because we want to capture the
 SHA1 of the current commit and assign it to a variable, which we can then use to uniquely tag the
 Docker image we are building. `sh` steps are simply shell commands.
 
-So now our pipeline should build a Docker image, push it to ECR and clean up the leftover image so
+So now our pipeline should build a Docker image, push it to my public registry and clean up the leftover image so
 that we don't accumulate garbage on Jenkins.
 
 In order to update the pipeline, we must commit and push our changes to Github. So, when you are
@@ -380,7 +371,7 @@ done editing, do the following:
 2. Push your changes to Github by running `git push origin`.
 
 Now, re-run the pipeline on Jenkins and examine its output. If all goes well, the pipeline will
-build a Docker image, push it to GCR and clean up the local image on Jenkins.
+build a Docker image, push it and build a container out of it.
 
 
 Type of environments :- 
