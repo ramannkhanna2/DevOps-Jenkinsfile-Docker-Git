@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Build&Deploy') {
             steps {
              // Get SHA1 of current commit
               script {
@@ -10,9 +10,9 @@ pipeline {
               }
              // remove previous containers
              sh "sudo docker rm -f `docker ps -aq`"   
-             // Build the Docker image
+             // BUILD the Docker image
              sh "sudo docker build -t image-name:${commit_id} ."
-             // Running docker container as my application   
+             // SDEPLOYMENT:  Running docker container as my application   
              sh "sudo docker run -d -p 81:80 --name mycontainer image-name:${commit_id}" 
             }
         }
