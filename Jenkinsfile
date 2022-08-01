@@ -13,7 +13,7 @@ pipeline {
              // Build the Docker image
              sh "sudo docker build -t image-name:${commit_id} ."
              // Running docker container as my application   
-             sh "sudo docker run -d -p 8081:8080 --name mycontainer image-name:${commit_id}" 
+             sh "sudo docker run -d -p 81:80 --name mycontainer image-name:${commit_id}" 
             }
         }
     }    
