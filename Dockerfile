@@ -1,7 +1,13 @@
 FROM ubuntu:20.04
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Update package lists
 RUN apt-get update -y 
+
+# Set timezone to UTC
+RUN ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
+
 
 # Install Apache2
 RUN apt-get install -y apache2 
