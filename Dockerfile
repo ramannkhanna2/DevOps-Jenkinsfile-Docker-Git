@@ -1,4 +1,3 @@
-Copy code
 FROM ubuntu:18.04
 MAINTAINER Raman Khanna <raman@email>
 
