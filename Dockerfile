@@ -5,6 +5,13 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Update package lists
 RUN apt-get update -y 
 
+
+# Update package list and install Apache, PHP, and tzdata
+RUN apt-get update -y && \
+    apt-get install -y apache2 php tzdata && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 # Set timezone to UTC
 RUN ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
 
