@@ -1,5 +1,6 @@
 pipeline {
-    agent any  // Use any available agent to execute this pipeline
+    #agent any  // Use any available agent to execute this pipeline
+    agent { label 'agent-1' }
 
     // -----------------------------
     // Pipeline Parameters (User Inputs)
