@@ -19,7 +19,7 @@ pipeline {
     environment {
         BUILD_TS = "${new Date().format('yyyyMMdd-HHmmss')}"  // Timestamp for tagging
         CONTAINER_NAME = "container-${params.APP_NAME}"       // Container name based on input
-        HOST_PORT = '8081'                                    // Exposed port on host
+        // HOST_PORT = '8081'                                    // Exposed port on host
         APP_PORT = '80'                                       // Application port inside container
     }
 
@@ -76,7 +76,7 @@ pipeline {
                     // Run Docker container with mapped ports and unique name
                     sh """
                         docker run -d --name ${CONTAINER_NAME} \\
-                            -p ${HOST_PORT}:${APP_PORT} \\
+                            -p ${params.HOST_PORT}:${APP_PORT} \\
                             ${buildTag}
                     """
                 }
