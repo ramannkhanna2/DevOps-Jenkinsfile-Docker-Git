@@ -9,6 +9,8 @@ pipeline {
         string(name: 'APP_NAME', defaultValue: 'myapp', description: 'Name of the Docker image to build')
         choice(name: 'DEPLOY_ENV', choices: ['dev', 'qa', 'prod'], description: 'Target deployment environment')
         booleanParam(name: 'CLEANUP_OLD', defaultValue: true, description: 'Cleanup old Docker container before deployment')
+        string(name: 'HOST_PORT', defaultValue: '8081', description: 'Host port to expose container on')
+
     }
 
     // -----------------------------
