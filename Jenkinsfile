@@ -9,7 +9,7 @@ pipeline {
         string(name: 'APP_NAME', defaultValue: 'myapp', description: 'Name of the Docker image to build')
         choice(name: 'DEPLOY_ENV', choices: ['dev', 'qa', 'prod'], description: 'Target deployment environment')
         booleanParam(name: 'CLEANUP_OLD', defaultValue: true, description: 'Cleanup old Docker container before deployment')
-        string(name: 'HOST_PORT', defaultValue: '8081', description: 'Host port to expose container on')
+        string(name: 'PORT_ON_HOST', defaultValue: '8081', description: 'Host port to expose container on')
 
     }
 
@@ -19,7 +19,7 @@ pipeline {
     environment {
         BUILD_TS = "${new Date().format('yyyyMMdd-HHmmss')}"  // Timestamp for tagging
         CONTAINER_NAME = "container-${params.APP_NAME}"       // Container name based on input
-        // HOST_PORT = '8081'                                    // Exposed port on host
+        HOST_PORT = "${params.PORT_ON_HOST}"                  // Exposed port on host
         APP_PORT = '80'                                       // Application port inside container
     }
 
@@ -76,7 +76,7 @@ pipeline {
                     // Run Docker container with mapped ports and unique name
                     sh """
                         docker run -d --name ${CONTAINER_NAME} \\
-                            -p ${params.HOST_PORT}:${APP_PORT} \\
+                            -p ${HOST_PORT}:${APP_PORT} \\
                             ${buildTag}
                     """
                 }
